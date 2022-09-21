@@ -46,6 +46,10 @@ export const Chat = ({user}: any) => {
                 .then(res => {
                     setMessageList(res.data);
                 });
+            axios.get(`${process.env.NEXT_PUBLIC_BE_PATH}/case/${id}`)
+                .then(res => {
+                    setCurrentCustomer({username: res.data.userName, firstName: "John", lastName: "doe"});
+                });
         }
     }, [id]);
 
@@ -64,7 +68,7 @@ export const Chat = ({user}: any) => {
                         <div style={{
                             fontSize: '10px',
                             marginBottom: '10px'
-                        }}>{currentCustomer.firstName}&nbsp;{currentCustomer.lastName}&nbsp;-&nbsp;{currentCompany.name}</div>
+                        }}>{currentCustomer.username}&nbsp;-&nbsp;{msg.channel}</div>
                         <span style={{background: '#bbb', borderRadius: '3px', padding: '7px 10px'}}>
                     <span style={{}}>{msg.message}</span><span style={{marginLeft: '10px'}}>22:13</span>
                     </span>
@@ -106,6 +110,7 @@ export const Chat = ({user}: any) => {
             source: 'WEB',
             direction: 'OUTBOUND',
             channel: currentChannel,
+            userName: currentCustomer.username,
             message: currentText
         })
             .then(res => {
