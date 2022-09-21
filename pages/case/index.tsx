@@ -34,7 +34,7 @@ const Index: NextPage = () => {
         <>
             <Toolbar left={leftContents}/>
             <DataTable value={flows}>
-                <Column field="name" header="Name"></Column>
+                <Column field="userName" header="Name"></Column>
                 <Column field="state" header="State"></Column>
                 <Column field="actions" header="Actions" align={'right'} body={actionsColumn}></Column>
             </DataTable>
