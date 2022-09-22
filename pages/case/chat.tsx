@@ -69,7 +69,7 @@ export const Chat = ({user}: any) => {
                             fontSize: '10px',
                             marginBottom: '10px'
                         }}>{currentCustomer.username}&nbsp;-&nbsp;{msg.channel}</div>
-                        <span style={{background: '#bbbbbb', lineHeight: '27px', borderRadius: '3px', padding: '7px 10px'}}>
+                        <span style={{whiteSpace: 'pre-wrap', background: '#bbbbbb', lineHeight: '27px', borderRadius: '3px', padding: '7px 10px'}}>
                     <span style={{}}>{msg.message}</span><span style={{marginLeft: '10px'}}>22:13</span>
                     </span>
                     </div>
@@ -81,7 +81,7 @@ export const Chat = ({user}: any) => {
                             lineHeight: '16px',
                             marginBottom: '10px'
                         }}>{currentUser.firstName}&nbsp;{currentUser.lastName}</div>
-                        <span style={{background: '#bbbbbb', lineHeight: '27px', borderRadius: '3px', padding: '7px 10px'}}>
+                        <span style={{whiteSpace: 'pre-wrap', background: '#bbbbbb', lineHeight: '27px', borderRadius: '3px', padding: '7px 10px'}}>
                             <span style={{}}>{msg.message}</span><span style={{marginLeft: '10px'}}>22:13</span>
                         </span>
                     </div>
