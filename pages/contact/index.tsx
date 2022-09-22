@@ -11,13 +11,10 @@ const Index: NextPage = () => {
     const router = useRouter();
     const [flows, setFlows] = useState([] as any);
 
-    // eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBUFA6Om9yY2hlc3RyYXRpb24tYnVpbGRlci1hcGkiLCJhdXRoIjoiUk9MRV9BUFBMSUNBVElPTiIsImV4cCI6MTk3MzU3NzIwN30.krsrF3TVMAwNjnDGwIL3hqNIrAR3636u4Tkh7gpk2yQhbb2CxAwS2t6HN8vGb90rF8UGNBzj9hBAkuLvXuf-UA
-
     useEffect(() => {
 
         axios.get(`${process.env.NEXT_PUBLIC_BE_PATH}/api/flow`, {
             headers: {
-                // 'Authorization': `Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBUFA6Om9yY2hlc3RyYXRpb24tYnVpbGRlci1hcGkiLCJhdXRoIjoiUk9MRV9BUFBMSUNBVElPTiIsImV4cCI6MTk3MzU3NzIwN30.krsrF3TVMAwNjnDGwIL3hqNIrAR3636u4Tkh7gpk2yQhbb2CxAwS2t6HN8vGb90rF8UGNBzj9hBAkuLvXuf-UA`
             }
         })
             .then(res => {
