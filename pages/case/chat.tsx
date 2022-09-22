@@ -55,6 +55,12 @@ export const Chat = ({user}: any) => {
 
     useEffect(() => {
         setMessages(messageList.map((msg: any) => {
+            var lines = msg.message.split('\n');
+
+            var filterred = lines.filter(function (line) {
+                return line.indexOf('>') != 0;
+            });
+            msg.message = filterred.join('\n');
             return (<div key={msg.id} style={{
                 display: 'block',
                 width: 'auto',
