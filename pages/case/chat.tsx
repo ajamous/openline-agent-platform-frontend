@@ -33,6 +33,10 @@ export const Chat = ({user}: any) => {
         name: 'Google'
     });
 
+    function zeroPad(number) {
+        if(number < 10) return '0' + number;
+        return '' + number;
+    }
     const [currentChannel, setCurrentChannel] = useState('CHAT');
     const [currentText, setCurrentText] = useState('');
     const [attachmentButtonHidden, setAttachmentButtonHidden] = useState(false);
@@ -61,6 +65,9 @@ export const Chat = ({user}: any) => {
                 return line.indexOf('>') != 0;
             });
             msg.message = filterred.join('\n');
+            msg.createdDate[3] = zeroPad(msg.createdDate[3]);
+            msg.createdDate[4] = zeroPad(msg.createdDate[4]);
+
             return (<div key={msg.id} style={{
                 display: 'block',
                 width: 'auto',
@@ -76,7 +83,7 @@ export const Chat = ({user}: any) => {
                             marginBottom: '10px'
                         }}>{currentCustomer.username}&nbsp;-&nbsp;{msg.channel}</div>
                         <span style={{whiteSpace: 'pre-wrap', background: '#bbbbbb', lineHeight: '27px', borderRadius: '3px', padding: '7px 10px'}}>
-                    <span style={{}}>{msg.message}</span><span style={{marginLeft: '10px'}}>22:13</span>
+                    <span style={{}}>{msg.message}</span><span style={{marginLeft: '10px'}}>{msg.createdDate[3]}:{msg.createdDate[4]}</span>
                     </span>
                     </div>
                 }
@@ -88,7 +95,7 @@ export const Chat = ({user}: any) => {
                             marginBottom: '10px'
                         }}>{currentUser.firstName}&nbsp;{currentUser.lastName}</div>
                         <span style={{whiteSpace: 'pre-wrap', background: '#bbbbbb', lineHeight: '27px', borderRadius: '3px', padding: '7px 10px'}}>
-                            <span style={{}}>{msg.message}</span><span style={{marginLeft: '10px'}}>22:13</span>
+                            <span style={{}}>{msg.message}</span><span style={{marginLeft: '10px'}}>{msg.createdDate[3]}:{msg.createdDate[4]}</span>
                         </span>
                     </div>
                 }
@@ -136,7 +143,8 @@ export const Chat = ({user}: any) => {
         setMessageList((messageList: any) => [...messageList, {
             id: msg.id,
             direction: msg.direction,
-            message: msg.message
+            message: msg.message,
+            createdDate: msg.createdDate
         }]);
     }
 
