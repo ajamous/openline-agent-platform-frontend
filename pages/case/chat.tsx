@@ -33,10 +33,16 @@ export const Chat = ({user}: any) => {
         name: 'Google'
     });
 
-    function zeroPad(number) {
+    function zeroPad(number: number) {
         if(number < 10) return '0' + number;
         return '' + number;
     }
+
+    function monthConvert(number: number) {
+        let months = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'June', 'July', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'];
+        return months[number-1];
+    }
+
     const [currentChannel, setCurrentChannel] = useState('CHAT');
     const [currentText, setCurrentText] = useState('');
     const [attachmentButtonHidden, setAttachmentButtonHidden] = useState(false);
@@ -64,10 +70,13 @@ export const Chat = ({user}: any) => {
             var filterred = lines.filter(function (line) {
                 return line.indexOf('>') != 0;
             });
-            msg.message = filterred.join('\n');
+            msg.message = filterred.join('\n').trim();
+            let year = msg.createdDate[0];
+            let month = monthConvert(msg.createdDate[1]);
+            let day = msg.createdDate[2];
             let hour = zeroPad(msg.createdDate[3]);
             let minute = zeroPad(msg.createdDate[4]);
-
+            
             return (<div key={msg.id} style={{
                 display: 'block',
                 width: 'auto',
@@ -81,9 +90,9 @@ export const Chat = ({user}: any) => {
                         <div style={{
                             fontSize: '10px',
                             marginBottom: '10px'
-                        }}>{currentCustomer.username}&nbsp;-&nbsp;{msg.channel}</div>
+                        }}>{currentCustomer.username}&nbsp;-&nbsp;{msg.channel}&nbsp;-&nbsp;{day},&nbsp;{month}&nbsp;{year}&nbsp;{hour}:{minute}</div>
                         <span style={{whiteSpace: 'pre-wrap', background: '#bbbbbb', lineHeight: '27px', borderRadius: '3px', padding: '7px 10px'}}>
-                    <span style={{}}>{msg.message}</span><span style={{marginLeft: '10px'}}>{hour}:{minute}</span>
+                    <span style={{}}>{msg.message}</span><span style={{marginLeft: '10px'}}></span>
                     </span>
                     </div>
                 }
@@ -93,7 +102,7 @@ export const Chat = ({user}: any) => {
                             fontSize: '10px',
                             lineHeight: '16px',
                             marginBottom: '10px'
-                        }}>{currentUser.firstName}&nbsp;{currentUser.lastName}</div>
+                        }}>{currentUser.firstName}&nbsp;{currentUser.lastName}&nbsp;-&nbsp;{day},&nbsp;{month}&nbsp;{year}&nbsp;{hour}:{minute}</div>
                         <span style={{whiteSpace: 'pre-wrap', background: '#bbbbbb', lineHeight: '27px', borderRadius: '3px', padding: '7px 10px'}}>
                             <span style={{}}>{msg.message}</span><span style={{marginLeft: '10px'}}>{hour}:{minute}</span>
                         </span>
@@ -144,7 +153,8 @@ export const Chat = ({user}: any) => {
             id: msg.id,
             direction: msg.direction,
             message: msg.message,
-            createdDate: msg.createdDate
+            createdDate: msg.createdDate,
+            channel: msg.channel
         }]);
     }
 
