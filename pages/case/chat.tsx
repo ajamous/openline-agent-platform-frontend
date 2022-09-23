@@ -65,8 +65,8 @@ export const Chat = ({user}: any) => {
                 return line.indexOf('>') != 0;
             });
             msg.message = filterred.join('\n');
-            msg.createdDate[3] = zeroPad(msg.createdDate[3]);
-            msg.createdDate[4] = zeroPad(msg.createdDate[4]);
+            let hour = zeroPad(msg.createdDate[3]);
+            let minute = zeroPad(msg.createdDate[4]);
 
             return (<div key={msg.id} style={{
                 display: 'block',
@@ -83,7 +83,7 @@ export const Chat = ({user}: any) => {
                             marginBottom: '10px'
                         }}>{currentCustomer.username}&nbsp;-&nbsp;{msg.channel}</div>
                         <span style={{whiteSpace: 'pre-wrap', background: '#bbbbbb', lineHeight: '27px', borderRadius: '3px', padding: '7px 10px'}}>
-                    <span style={{}}>{msg.message}</span><span style={{marginLeft: '10px'}}>{msg.createdDate[3]}:{msg.createdDate[4]}</span>
+                    <span style={{}}>{msg.message}</span><span style={{marginLeft: '10px'}}>{hour}:{minute}</span>
                     </span>
                     </div>
                 }
@@ -95,7 +95,7 @@ export const Chat = ({user}: any) => {
                             marginBottom: '10px'
                         }}>{currentUser.firstName}&nbsp;{currentUser.lastName}</div>
                         <span style={{whiteSpace: 'pre-wrap', background: '#bbbbbb', lineHeight: '27px', borderRadius: '3px', padding: '7px 10px'}}>
-                            <span style={{}}>{msg.message}</span><span style={{marginLeft: '10px'}}>{msg.createdDate[3]}:{msg.createdDate[4]}</span>
+                            <span style={{}}>{msg.message}</span><span style={{marginLeft: '10px'}}>{hour}:{minute}</span>
                         </span>
                     </div>
                 }
