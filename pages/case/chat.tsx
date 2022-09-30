@@ -172,14 +172,14 @@ export const Chat = ({user}: any) => {
         <>
             <Layout>
 
-                <SockJsClient
-                    url={`${process.env.NEXT_PUBLIC_WEBSOCKET_PATH}/websocket`}
-                    topics={[`/queue/new-case-item/${id}`]}
-                    onConnect={console.log("Connected! - " + id)}
-                    onDisconnect={console.log("Disconnected!")}
-                    onMessage={(msg: any) => handleWebsocketMessage(msg)}
-                    debug={true}
-                />
+                {/*<SockJsClient*/}
+                {/*    url={`${process.env.NEXT_PUBLIC_WEBSOCKET_PATH}/websocket`}*/}
+                {/*    topics={[`/queue/new-case-item/${id}`]}*/}
+                {/*    onConnect={console.log("Connected! - " + id)}*/}
+                {/*    onDisconnect={console.log("Disconnected!")}*/}
+                {/*    onMessage={(msg: any) => handleWebsocketMessage(msg)}*/}
+                {/*    debug={true}*/}
+                {/*/>*/}
 
                 <div style={{
                     width: '100%',

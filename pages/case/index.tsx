@@ -46,17 +46,17 @@ const Index: NextPage = () => {
     return (
         <>
             <Layout>
-                {
-                    initializeWebsocket &&
-                    <SockJsClient
-                        url={`${process.env.NEXT_PUBLIC_WEBSOCKET_PATH}/websocket`}
-                        topics={[`/queue/cases`]}
-                        onConnect={console.log("Connected!")}
-                        onDisconnect={console.log("Disconnected!")}
-                        onMessage={(msg: any) => handleWebsocketMessage(msg)}
-                        debug={true}
-                    />
-                }
+                {/*{*/}
+                {/*    initializeWebsocket &&*/}
+                {/*    <SockJsClient*/}
+                {/*        url={`${process.env.NEXT_PUBLIC_WEBSOCKET_PATH}/websocket`}*/}
+                {/*        topics={[`/queue/cases`]}*/}
+                {/*        onConnect={console.log("Connected!")}*/}
+                {/*        onDisconnect={console.log("Disconnected!")}*/}
+                {/*        onMessage={(msg: any) => handleWebsocketMessage(msg)}*/}
+                {/*        debug={true}*/}
+                {/*    />*/}
+                {/*}*/}
 
                 <Toolbar left={leftContents}/>
                 <DataTable value={cases}>
