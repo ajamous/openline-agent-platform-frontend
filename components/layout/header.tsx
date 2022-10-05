@@ -1,19 +1,20 @@
 import {Toolbar} from 'primereact/toolbar';
-import {Button} from "primereact/button";
 import PropTypes from "prop-types";
 import {Fragment} from "preact";
-import {signIn, signOut, useSession} from "next-auth/react";
-import {Avatar} from "primereact/avatar";
 import {useRouter} from "next/router";
+import {Button} from "primereact/button";
+import axios from "axios";
+import {useState} from "react";
+import {getUserAccount, User} from "../../lib/loadUserAccount";
 
 
 const Header = (props: any) => {
     const router = useRouter();
-    const {data: session} = useSession();
+    const [user] = useState(getUserAccount());
 
     const leftContents = (
         <Fragment>
-            <svg width="147" height="25" viewBox="0 0 147 35" fill="none"
+            <svg width="147" height="25" viewBox="0 0 147 35" fill="none" style={{color: 'black'}}
                  xmlns="http://www.w3.org/2000/svg">
                 <path
                     d="M0 17.5C0 7.83502 7.83502 0 17.5 0C27.165 0 35 7.83502 35 17.5C35 27.165 27.165 35 17.5 35C7.83502 35 0 27.165 0 17.5Z"
@@ -36,9 +37,23 @@ const Header = (props: any) => {
 
     const rightContents = (
         <Fragment>
-                    <Button icon="pi pi-sign-out" iconPos="right" className="p-button-rounded p-button-text text-white text-sm w-auto"
-                            label={session?.user?.email as string}
-                            onClick={() => signOut()}/>
+            {
+                user &&
+                <Button icon="pi pi-sign-out" iconPos="right"
+                        className="p-button-rounded p-button-text text-sm w-auto"
+                        label={user.email}
+                        onClick={async () => {
+                            await axios.post(`${process.env.NEXT_PUBLIC_BE_PATH}/logout`).then((response: any) => {
+                                localStorage.removeItem('userData');
+                                router.push('/login');
+                            }).catch(err => {
+                                return {
+                                    error: true,
+                                    response: err.response
+                                }
+                            });
+                        }}/>
+            }
         </Fragment>
     );
 

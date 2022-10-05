@@ -4,7 +4,8 @@ const nextConfig = {
   swcMinify: true,
   env: {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-  }
+  },
+  output: 'standalone'
 }
 
 module.exports = nextConfig

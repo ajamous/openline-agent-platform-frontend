@@ -5,13 +5,14 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {InputText} from "primereact/inputtext";
 import {useRouter} from "next/router";
 import axios from "axios";
-import SockJsClient from 'react-stomp';
 import {random} from "nanoid";
-import {SelectButton} from "primereact/selectbutton";
 import {Dropdown} from "primereact/dropdown";
+import Layout from "../../components/layout/layout";
 
 export const Chat = ({user}: any) => {
     const router = useRouter();
+    const SockJsClient = require('react-stomp');
+
     const {id} = router.query;
 
     const messageWrapper = useRef(null);
@@ -67,7 +68,7 @@ export const Chat = ({user}: any) => {
         setMessages(messageList.map((msg: any) => {
             var lines = msg.message.split('\n');
 
-            var filterred = lines.filter(function (line) {
+            var filterred = lines.filter(function (line: string) {
                 return line.indexOf('>') != 0;
             });
             msg.message = filterred.join('\n').trim();
@@ -115,6 +116,7 @@ export const Chat = ({user}: any) => {
 
     //when a new message appears, scroll to the end of container
     useEffect(() => {
+        // @ts-ignore
         messageWrapper?.current?.scrollIntoView({behavior: "smooth"});
     }, [messages]);
 
@@ -168,16 +170,16 @@ export const Chat = ({user}: any) => {
 
     return (
         <>
-            <div style={{width: '100%', height: '100%'}}>
+            <Layout>
 
-                <SockJsClient
-                    url={`${process.env.NEXT_PUBLIC_WEBSOCKET_PATH}/websocket`}
-                    topics={[`/queue/new-case-item/${id}`]}
-                    onConnect={console.log("Connected! - " + id)}
-                    onDisconnect={console.log("Disconnected!")}
-                    onMessage={(msg: any) => handleWebsocketMessage(msg)}
-                    debug={true}
-                />
+                {/*<SockJsClient*/}
+                {/*    url={`${process.env.NEXT_PUBLIC_WEBSOCKET_PATH}/websocket`}*/}
+                {/*    topics={[`/queue/new-case-item/${id}`]}*/}
+                {/*    onConnect={console.log("Connected! - " + id)}*/}
+                {/*    onDisconnect={console.log("Disconnected!")}*/}
+                {/*    onMessage={(msg: any) => handleWebsocketMessage(msg)}*/}
+                {/*    debug={true}*/}
+                {/*/>*/}
 
                 <div style={{
                     width: '100%',
@@ -209,20 +211,22 @@ export const Chat = ({user}: any) => {
                         <FontAwesomeIcon icon={faPlay} style={{color: 'black'}}/>
                     </Button>
 
-                    {
-                        !attachmentButtonHidden &&
-                        <>
-                            <Button onClick={() => fileUploadInput?.current.click()} className='p-button-text'>
-                                <FontAwesomeIcon icon={faPaperclip} style={{color: 'black'}}/>
-                            </Button>
-                            <input ref={fileUploadInput} type="file" name="file" style={{display: 'none'}}/>
-                        </>
-                    }
+                    {/*{*/}
+                    {/*    !attachmentButtonHidden &&*/}
+                    {/*    <>*/}
+                    {/*        <Button onClick={() => fileUploadInput?.current.click()} className='p-button-text'>*/}
+                    {/*            <FontAwesomeIcon icon={faPaperclip} style={{color: 'black'}}/>*/}
+                    {/*        </Button>*/}
+                    {/*        <input ref={fileUploadInput} type="file" name="file" style={{display: 'none'}}/>*/}
+                    {/*    </>*/}
+                    {/*}*/}
 
                 </div>
 
-            </div>
+            </Layout>
         </>
     );
 
 }
+
+export default Chat;
