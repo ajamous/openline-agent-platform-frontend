@@ -1,6 +1,7 @@
 import {useCallback, useEffect, useRef, useState} from "react";
+import * as React from "react";
 import {Button} from "primereact/button";
-import {faPaperclip, faPlay} from "@fortawesome/free-solid-svg-icons";
+import {faPaperclip, faPlay, faPhone, faPhoneSlash} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {InputText} from "primereact/inputtext";
 import {useRouter} from "next/router";
@@ -8,20 +9,24 @@ import axios from "axios";
 import {random} from "nanoid";
 import {Dropdown} from "primereact/dropdown";
 import Layout from "../../components/layout/layout";
+import WebRTC from "./WebRTC";
+import {IFrame} from "@stomp/stompjs";
+import {configureStomp, useStomp} from "./useStomp";
 
 export const Chat = ({user}: any) => {
     const router = useRouter();
-    const SockJsClient = require('react-stomp');
 
     const {id} = router.query;
+    const incomingMessage = useStomp();
 
-    const messageWrapper = useRef(null);
-    const fileUploadInput = useRef(null);
+    const messageWrapper:React.RefObject<HTMLDivElement> = useRef(null);
+    const fileUploadInput:React.RefObject<HTMLInputElement> = useRef(null);
+
 
     const [currentUser, setCurrentUser] = useState({
-        username: 'agent1',
-        firstName: 'First name',
-        lastName: 'Last name'
+        username: 'AgentSmith',
+        firstName: 'Agent',
+        lastName: 'Smith'
     });
 
     const [currentCustomer, setCurrentCustomer] = useState({
@@ -48,6 +53,7 @@ export const Chat = ({user}: any) => {
     const [currentText, setCurrentText] = useState('');
     const [attachmentButtonHidden, setAttachmentButtonHidden] = useState(false);
     const [sendButtonDisabled, setSendButtonDisabled] = useState(false);
+    const [inCall, setInCall] = useState(false);
     const [messageList, setMessageList] = useState([] as any);
     const [messages, setMessages] = useState([] as any);
 
@@ -61,23 +67,27 @@ export const Chat = ({user}: any) => {
                 .then(res => {
                     setCurrentCustomer({username: res.data.userName, firstName: "John", lastName: "doe"});
                 });
+
+            configureStomp(`${process.env.NEXT_PUBLIC_STOMP_WEBSOCKET_PATH}/websocket`, `/queue/new-case-item/${id}`);
+
         }
     }, [id]);
 
     useEffect(() => {
         setMessages(messageList.map((msg: any) => {
-            var lines = msg.message.split('\n');
+            console.log("Have a message:\n" + JSON.stringify(msg));
+            let lines = msg.message.split('\n');
 
-            var filterred = lines.filter(function (line: string) {
+            let filtered:string[] = lines.filter(function (line:string) {
                 return line.indexOf('>') != 0;
             });
-            msg.message = filterred.join('\n').trim();
+            msg.message = filtered.join('\n').trim();
             let year = msg.createdDate[0];
             let month = monthConvert(msg.createdDate[1]);
             let day = msg.createdDate[2];
             let hour = zeroPad(msg.createdDate[3]);
             let minute = zeroPad(msg.createdDate[4]);
-            
+
             return (<div key={msg.id} style={{
                 display: 'block',
                 width: 'auto',
@@ -126,9 +136,34 @@ export const Chat = ({user}: any) => {
         setSendButtonDisabled(currentText === '')
     }, [currentText]);
 
+    useEffect(() => {
+        console.log("Got websocket!" + JSON.stringify(incomingMessage));
+        if (incomingMessage && Object.keys(incomingMessage).length !== 0 && incomingMessage.body.length > 0) {
+            handleWebsocketMessage(JSON.parse(incomingMessage.body));
+        }
+    }, [incomingMessage]);
+
     const handleAttach = () => {
 
     };
+
+    const webrtc:React.RefObject<WebRTC> = useRef<WebRTC>(null);
+
+    const handleCall = () => {
+        //setInCall(true);
+            let user = currentCustomer.username;
+            const regex = /.*<(.*)>/;
+            const matches = user.match(regex);
+            if(matches) {
+                user = matches[1];
+            }
+            webrtc.current?.makeCall("sip:" + user);
+    }
+    const hangupCall = () => {
+        setInCall(false);
+        webrtc.current?.hangupCall();
+
+    }
 
     const handleSendMessage = () => {
         axios.post(`${process.env.NEXT_PUBLIC_BE_PATH}/case/${id}/item`, {
@@ -144,6 +179,8 @@ export const Chat = ({user}: any) => {
             });
     };
 
+
+
     const getTypingIndicator = useCallback(
         () => {
             return undefined;
@@ -151,13 +188,15 @@ export const Chat = ({user}: any) => {
     );
 
     const handleWebsocketMessage = function (msg: any) {
-        setMessageList((messageList: any) => [...messageList, {
+        let newMsg = {
             id: msg.id,
             direction: msg.direction,
             message: msg.message,
             createdDate: msg.createdDate,
             channel: msg.channel
-        }]);
+        };
+        console.log("Adding message: " + JSON.stringify(newMsg));
+        setMessageList((messageList: any) => [...messageList, newMsg]);
     }
 
     function simulateMessage() {
@@ -171,22 +210,20 @@ export const Chat = ({user}: any) => {
     return (
         <>
             <Layout>
-
-                {/*<SockJsClient*/}
-                {/*    url={`${process.env.NEXT_PUBLIC_WEBSOCKET_PATH}/websocket`}*/}
-                {/*    topics={[`/queue/new-case-item/${id}`]}*/}
-                {/*    onConnect={console.log("Connected! - " + id)}*/}
-                {/*    onDisconnect={console.log("Disconnected!")}*/}
-                {/*    onMessage={(msg: any) => handleWebsocketMessage(msg)}*/}
-                {/*    debug={true}*/}
-                {/*/>*/}
-
                 <div style={{
                     width: '100%',
                     height: 'calc(100% - 100px)',
                     overflowX: 'hidden',
                     overflowY: 'auto'
                 }}>
+                    {process.env.NEXT_PUBLIC_WEBRTC_WEBSOCKET_URL &&
+                <WebRTC
+                    ref={webrtc}
+                    websocket={`${process.env.NEXT_PUBLIC_WEBRTC_WEBSOCKET_URL}`}
+                    from={"sip:" + currentUser.username + "@agent.openline.ai"}
+                        updateCallState={(state: boolean)=>setInCall(state)}
+
+                /> }
                     {messages}
                     <div ref={messageWrapper}></div>
                 </div>
@@ -221,6 +258,20 @@ export const Chat = ({user}: any) => {
                     {/*    </>*/}
                     {/*}*/}
 
+                    <span hidden={inCall}>
+                    <Button onClick={() => handleCall()} className='p-button-text' hidden={inCall}>
+                                         {process.env.NEXT_PUBLIC_WEBRTC_WEBSOCKET_URL &&
+                                             <FontAwesomeIcon icon={faPhone} style={{color: 'black'}}/>
+                                         }
+                    </Button>
+                    </span>
+                    <span hidden={!inCall}>
+                            <Button onClick={() => hangupCall()} className='p-button-text' hidden={!inCall}>
+                            {process.env.NEXT_PUBLIC_WEBRTC_WEBSOCKET_URL &&
+                                <FontAwesomeIcon icon={faPhoneSlash} style={{color: 'black'}}/>
+                            }
+                            </Button>
+                    </span>
                 </div>
 
             </Layout>
