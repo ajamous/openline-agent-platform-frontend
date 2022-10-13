@@ -12,7 +12,7 @@ import {
     RTCSessionEventMap
 } from "jssip/lib/RTCSession";
 import {IncomingRequest, OutgoingRequest} from "jssip/lib/SIPMessage";
-import {IncomingRTCSessionEvent, OutgoingRTCSessionEvent} from "jssip/lib/UA";
+import {IncomingRTCSessionEvent, OutgoingRTCSessionEvent, UAConfiguration} from "jssip/lib/UA";
 
 interface WebRTCState {
     inCall: boolean
@@ -21,6 +21,9 @@ interface WebRTCState {
     updateCallState: Function
     callerId: string
     ringing: boolean
+    autoStart: boolean
+    username?: string
+    password?: string
     
 }
 
@@ -28,6 +31,7 @@ interface WebRTCProps {
     websocket: string
     from: string
     updateCallState: Function
+    autoStart?: boolean
 }
 
 export default class WebRTC extends React.Component<WebRTCProps> {
@@ -46,8 +50,14 @@ export default class WebRTC extends React.Component<WebRTCProps> {
                 from: props.from,
                 updateCallState: props.updateCallState,
                 callerId: "",
-                ringing: false
+                ringing: false,
+                autoStart: false
             };
+
+        if (props.autoStart) {
+            this.state.autoStart = props.autoStart;
+        }
+
         this._ua = null;
         this.remoteVideo = React.createRef();
         //this.setState({inCall: this.state.inCall, callerId: this.state.callerId, ringing: this.state.ringing});
@@ -70,6 +80,10 @@ export default class WebRTC extends React.Component<WebRTCProps> {
         if(this._session) {
             this._session.terminate();
         }
+    }
+
+    setCredentials(user: string, pass: string) {
+        this.setState({username: user, password: pass});
     }
 
     makeCall(destination: string) {
@@ -115,16 +129,32 @@ export default class WebRTC extends React.Component<WebRTCProps> {
         )
     }
 
+
     componentDidMount () {
-        let socket:JsSIP.Socket = new JsSIP.WebSocketInterface(this.state.websocket);
-        let configuration = {
-            sockets  : [ socket ],
-            uri      : this.state.from
+        if(this.state.autoStart) {
+            this.startUA();
+        }
+    }
+
+    startUA() {
+        let socket: JsSIP.Socket = new JsSIP.WebSocketInterface(this.state.websocket);
+        let configuration : UAConfiguration= {
+            sockets: [socket],
+            uri: this.state.from
         };
+
+        if(this.state.username) {
+            configuration.authorization_user = this.state.username;
+            configuration.password = this.state.password;
+        }
+
         JsSIP.debug.enable('JsSIP:*');
         this._ua = new JsSIP.UA(configuration);
-        this._ua.on('newRTCSession', ({ originator, session: rtcSession, request }:IncomingRTCSessionEvent|OutgoingRTCSessionEvent)=>
-        {
+        this._ua.on('newRTCSession', ({
+                                          originator,
+                                          session: rtcSession,
+                                          request
+                                      }: IncomingRTCSessionEvent | OutgoingRTCSessionEvent) => {
             if (originator === 'local')
                 return;
 
@@ -135,7 +165,7 @@ export default class WebRTC extends React.Component<WebRTCProps> {
             this.state.updateCallState(true);
             console.error("Got a call for " + rtcSession.remote_identity.uri.toString());
             rtcSession.on('accepted', () => {
-                    if(this.remoteVideo.current) {
+                    if (this.remoteVideo.current) {
                         this.remoteVideo.current.srcObject = this._session.connection.getRemoteStreams()[0];
                         this.remoteVideo.current.play();
                     }
@@ -149,6 +179,7 @@ export default class WebRTC extends React.Component<WebRTCProps> {
         });
         this._ua.start();
     }
+
     render () {
 
         return (

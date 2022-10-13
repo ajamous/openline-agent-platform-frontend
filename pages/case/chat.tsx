@@ -66,12 +66,23 @@ export const Chat = ({user}: any) => {
             axios.get(`${process.env.NEXT_PUBLIC_BE_PATH}/case/${id}`)
                 .then(res => {
                     setCurrentCustomer({username: res.data.userName, firstName: "John", lastName: "doe"});
+
                 });
 
             configureStomp(`${process.env.NEXT_PUBLIC_STOMP_WEBSOCKET_PATH}/websocket`, `/queue/new-case-item/${id}`);
 
         }
     }, [id]);
+
+    useEffect(() => {
+        axios.get(`${process.env.NEXT_PUBLIC_BE_PATH}/call_credentials/?service=sip&username=`+currentUser.username + "@agent.openline.ai")
+            .then(res => {
+                console.error("Got a key: " + JSON.stringify(res.data));
+                webrtc.current?.setCredentials(res.data.username, res.data.password);
+                webrtc.current?.startUA();
+            });
+    }, []);
+
 
     useEffect(() => {
         setMessages(messageList.map((msg: any) => {
@@ -222,6 +233,7 @@ export const Chat = ({user}: any) => {
                     websocket={`${process.env.NEXT_PUBLIC_WEBRTC_WEBSOCKET_URL}`}
                     from={"sip:" + currentUser.username + "@agent.openline.ai"}
                         updateCallState={(state: boolean)=>setInCall(state)}
+                    autoStart={false}
 
                 /> }
                     {messages}
