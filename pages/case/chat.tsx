@@ -20,7 +20,6 @@ export const Chat = ({user}: any) => {
     const incomingMessage = useStomp();
 
     const messageWrapper:React.RefObject<HTMLDivElement> = useRef(null);
-    const fileUploadInput:React.RefObject<HTMLInputElement> = useRef(null);
 
 
     const [currentUser, setCurrentUser] = useState({
@@ -70,7 +69,6 @@ export const Chat = ({user}: any) => {
                 });
 
             configureStomp(`${process.env.NEXT_PUBLIC_STOMP_WEBSOCKET_PATH}/websocket`, `/queue/new-case-item/${id}`);
-
         }
     }, [id]);
 
@@ -154,10 +152,6 @@ export const Chat = ({user}: any) => {
         }
     }, [incomingMessage]);
 
-    const handleAttach = () => {
-
-    };
-
     const webrtc:React.RefObject<WebRTC> = useRef<WebRTC>(null);
 
     const handleCall = () => {
@@ -208,14 +202,6 @@ export const Chat = ({user}: any) => {
         };
         console.log("Adding message: " + JSON.stringify(newMsg));
         setMessageList((messageList: any) => [...messageList, newMsg]);
-    }
-
-    function simulateMessage() {
-        axios.post(`${process.env.NEXT_PUBLIC_WEBSOCKET_PATH}/case/${id}/simulateMessage`, {
-            source: 'WEB',
-            direction: 'OUTBOUND',
-            message: random(10) + ""
-        });
     }
 
     return (

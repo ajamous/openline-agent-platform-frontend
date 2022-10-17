@@ -9,10 +9,6 @@ let reactSetMessage:Function = (message:string) => {}
 export const useStomp = () => {
     const [message, setMessage] = useState<IFrame>({command: "", headers: {}, binaryBody: new Uint8Array(), isBinaryBody: false, body: "" });
 
-    useEffect(() => {
-
-    },[])
-
     reactMessage = message;
     reactSetMessage = setMessage;
     return message;
