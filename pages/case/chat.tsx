@@ -74,13 +74,20 @@ export const Chat = ({user}: any) => {
         configureStomp(`${process.env.NEXT_PUBLIC_STOMP_WEBSOCKET_PATH}/websocket`, `/queue/new-case-item/${id}`);
     }, [id])
 
-    useEffect(() => {
+    const refreshCredentials = () => {
         axios.get(`${process.env.NEXT_PUBLIC_BE_PATH}/call_credentials/?service=sip&username=`+currentUser.username + "@agent.openline.ai")
             .then(res => {
                 console.error("Got a key: " + JSON.stringify(res.data));
+                if(webrtc.current?._ua) {
+                    webrtc.current?.stopUA();
+                }
                 webrtc.current?.setCredentials(res.data.username, res.data.password);
                 webrtc.current?.startUA();
+                setTimeout(() => {refreshCredentials()}, (res.data.ttl*3000)/4);
             });
+    }
+    useEffect(() => {
+        refreshCredentials();
     }, []);
 
 
