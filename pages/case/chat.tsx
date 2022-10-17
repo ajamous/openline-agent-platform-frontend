@@ -67,10 +67,12 @@ export const Chat = ({user}: any) => {
                     setCurrentCustomer({username: res.data.userName, firstName: "John", lastName: "doe"});
 
                 });
-
-            configureStomp(`${process.env.NEXT_PUBLIC_STOMP_WEBSOCKET_PATH}/websocket`, `/queue/new-case-item/${id}`);
         }
     }, [id]);
+
+    useEffect(() => {
+        configureStomp(`${process.env.NEXT_PUBLIC_STOMP_WEBSOCKET_PATH}/websocket`, `/queue/new-case-item/${id}`);
+    }, [id])
 
     useEffect(() => {
         axios.get(`${process.env.NEXT_PUBLIC_BE_PATH}/call_credentials/?service=sip&username=`+currentUser.username + "@agent.openline.ai")
