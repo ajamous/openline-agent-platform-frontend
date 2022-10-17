@@ -136,7 +136,21 @@ export default class WebRTC extends React.Component<WebRTCProps> {
         }
     }
 
+    stopUA() {
+        if(!this._ua) {
+            console.log("UA not yet started! ignoring request");
+            return;
+        }
+
+        this._ua.stop();
+        this._ua = null;
+    }
+
     startUA() {
+        if(this._ua) {
+            console.log("UA already started! ignoring request");
+            return;
+        }
         let socket: JsSIP.Socket = new JsSIP.WebSocketInterface(this.state.websocket);
         let configuration : UAConfiguration= {
             sockets: [socket],
