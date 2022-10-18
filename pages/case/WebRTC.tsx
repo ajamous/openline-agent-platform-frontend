@@ -82,8 +82,12 @@ export default class WebRTC extends React.Component<WebRTCProps> {
         }
     }
 
-    setCredentials(user: string, pass: string) {
-        this.setState({username: user, password: pass});
+    setCredentials(user: string, pass: string, callback?: (()=>void)) {
+        if (!callback) {
+            this.setState({username: user, password: pass});
+        } else {
+            this.setState({username: user, password: pass}, callback);
+        }
     }
 
     makeCall(destination: string) {
@@ -162,6 +166,7 @@ export default class WebRTC extends React.Component<WebRTCProps> {
             configuration.password = this.state.password;
         }
 
+        console.error("Got a configuration: " + JSON.stringify(configuration));
         JsSIP.debug.enable('JsSIP:*');
         this._ua = new JsSIP.UA(configuration);
         this._ua.on('newRTCSession', ({
