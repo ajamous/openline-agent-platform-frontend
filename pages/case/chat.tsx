@@ -81,8 +81,8 @@ export const Chat = ({user}: any) => {
                 if(webrtc.current?._ua) {
                     webrtc.current?.stopUA();
                 }
-                webrtc.current?.setCredentials(res.data.username, res.data.password);
-                webrtc.current?.startUA();
+                webrtc.current?.setCredentials(res.data.username, res.data.password,
+                    () =>{webrtc.current?.startUA()});
                 setTimeout(() => {refreshCredentials()}, (res.data.ttl*3000)/4);
             });
     }
