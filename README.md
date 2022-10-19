@@ -2,7 +2,29 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
+First, clone repo to your machine:
+
+```bash
+git clone https://github.com/openline-ai/openline-agent-platform-frontend.git 
+
+```
+
+Change directory:
+
+```bash
+cd openline-agent-platform-frontend/
+```
+
+Install dependencies:
+
+```bash
+
+npm install
+
+```
+
+
+Run the development server:
 
 ```bash
 npm run dev
